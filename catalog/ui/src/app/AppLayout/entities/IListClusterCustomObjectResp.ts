@@ -21,7 +21,7 @@ interface IMetaData {
     "managedFields": [IManagedFields]
 };
 
-interface IListClusterCustomObjectRespItems {
+export default interface IListClusterCustomObjectRespItems {
     "metadata": IMetaData,
     "fullName": string,
     "identities": [string]
