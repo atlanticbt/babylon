@@ -87,6 +87,147 @@ export async function getUserInfo(user): Promise<any> {
   return await resp.json();
 }
 
+export async function getAnarchyActions(): Promise<any> {
+  const session = await getApiSession();
+  const resp = await fetch(`/apis/anarchy.gpte.redhat.com/v1/anarchyactions`,
+    {
+      headers: {
+        Authentication: `Bearer ${session.token}`,
+      }
+    }
+  );
+  return await resp.json();
+}
+
+export async function getAnarchySubjects(): Promise<any> {
+  const session = await getApiSession();
+  const resp = await fetch(`/apis/anarchy.gpte.redhat.com/v1/anarchysubjects`,
+    {
+      headers: {
+        Authentication: `Bearer ${session.token}`,
+      }
+    }
+  );
+  return await resp.json();
+}
+
+export async function getAnarchyRuns(): Promise<any> {
+  const session = await getApiSession();
+  const resp = await fetch(`/apis/anarchy.gpte.redhat.com/v1/anarchyruns`,
+    {
+      headers: {
+        Authentication: `Bearer ${session.token}`,
+      }
+    }
+  );
+  return await resp.json();
+}
+
+export async function getResourcepools(): Promise<any> {
+  const session = await getApiSession();
+  const resp = await fetch(`/apis/poolboy.gpte.redhat.com/v1/resourcepools`,
+    {
+      headers: {
+        Authentication: `Bearer ${session.token}`,
+      }
+    }
+  );
+  return await resp.json();
+}
+
+export async function getResourceclaims(): Promise<any> {
+  const session = await getApiSession();
+  const resp = await fetch(`/apis/poolboy.gpte.redhat.com/v1/resourceclaims`,
+    {
+      headers: {
+        Authentication: `Bearer ${session.token}`,
+      }
+    }
+  );
+  return await resp.json();
+}
+
+export async function getResourceHandles(): Promise<any> {
+  const session = await getApiSession();
+  const resp = await fetch(`apis/poolboy.gpte.redhat.com/v1/resourcehandles`,
+    {
+      headers: {
+        Authentication: `Bearer ${session.token}`,
+      }
+    }
+  );
+  return await resp.json();
+}
+
+export async function getResourceProviders(): Promise<any> {
+  const session = await getApiSession();
+  const resp = await fetch(`apis/poolboy.gpte.redhat.com/v1/resourceproviders`,
+    {
+      headers: {
+        Authentication: `Bearer ${session.token}`,
+      }
+    }
+  );
+  return await resp.json();
+}
+
+export async function deleteAnarchyRun(anarchyRun): Promise<any> {
+  const session = await getApiSession();
+  const resp = await apiFetch(
+    `/apis/anarchy.gpte.redhat.com/v1/anarchyruns/:anarchyRun`,
+    {
+      method: 'DELETE',
+      headers: {
+        Authentication: `Bearer ${session.token}`,
+      }
+    }
+  );
+  return await resp.json();
+}
+
+export async function deleteAnarchyAction(anarchyAction): Promise<any> {
+  const session = await getApiSession();
+  const resp = await apiFetch(
+    `/apis/anarchy.gpte.redhat.com/v1/anarchyactions/:anarchyAction`,
+    {
+      method: 'DELETE',
+      headers: {
+        Authentication: `Bearer ${session.token}`,
+      }
+    }
+  )
+    .then(response => response.json())
+    .then(resp => {
+      if (resp.status === 200) {
+        refreshApiSession();
+      } else if (resp.status === 401) {
+        resp.error = 'Session expired, please refresh.'
+      } else if (resp.status === 403) {
+        resp.error = 'Sorry, it seems you do not have access.'
+      } else {
+        resp.error = resp.status
+      }
+    });
+  if (!window.apiSessionPromise) {
+    refreshApiSession();
+    getAnarchyActions();
+  }
+}
+
+export async function deleteHandle(resourcehandle): Promise<any> {
+  const session = await getApiSession();
+  const resp = await apiFetch(
+    `/apis/poolboy.gpte.redhat.com/v1/resourcehandles/:resourcehandle`,
+    {
+      method: 'DELETE',
+      headers: {
+        Authentication: `Bearer ${session.token}`,
+      }
+    }
+  )
+  return await resp.json();
+}
+
 export async function createResourceClaim(definition, opt: any = {}): Promise<any> {
   const namespace = definition.metadata.namespace;
   const resourceClaim = await createNamespacedCustomObject(
